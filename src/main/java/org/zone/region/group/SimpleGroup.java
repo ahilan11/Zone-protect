@@ -9,25 +9,39 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 
+/**
+ * Basic implementation of a group
+ *
+ * @since 1.0.0
+ */
 public class SimpleGroup implements Group {
 
     private final @NotNull String name;
     private final @NotNull String key;
     private final @NotNull PluginContainer plugin;
-    private @Nullable Group parent;
     private final boolean canBeRemoved;
     private final Collection<GroupKey> keys = new HashSet<>();
+    private @Nullable Group parent;
 
-    public SimpleGroup(@NotNull PluginContainer plugin, @NotNull String key, @NotNull Group parent) {
+    public SimpleGroup(
+            @NotNull PluginContainer plugin, @NotNull String key, @NotNull Group parent) {
         this(plugin, key, key, parent);
     }
 
-    public SimpleGroup(@NotNull PluginContainer plugin, @NotNull String key, @NotNull String name, @NotNull Group parent) {
+    public SimpleGroup(
+            @NotNull PluginContainer plugin,
+            @NotNull String key,
+            @NotNull String name,
+            @NotNull Group parent) {
         this(plugin, key, name, parent, true);
     }
 
-    SimpleGroup(@NotNull PluginContainer plugin, @NotNull String key, @NotNull String name,
-                @Nullable Group parent, boolean canRemove) {
+    SimpleGroup(
+            @NotNull PluginContainer plugin,
+            @NotNull String key,
+            @NotNull String name,
+            @Nullable Group parent,
+            boolean canRemove) {
         this.key = key;
         this.plugin = plugin;
         this.name = name;
@@ -51,7 +65,7 @@ public class SimpleGroup implements Group {
     }
 
     @Override
-    public Optional<Group> getParent() {
+    public @NotNull Optional<Group> getParent() {
         return Optional.ofNullable(this.parent);
     }
 
@@ -66,13 +80,13 @@ public class SimpleGroup implements Group {
     }
 
     @Override
-    public Collection<GroupKey> getKeys() {
+    public @NotNull Collection<GroupKey> getKeys() {
         return this.keys;
     }
 
     @Override
     public int hashCode() {
-        return super.hashCode();
+        return this.getId().hashCode();
     }
 
     @Override
@@ -82,5 +96,4 @@ public class SimpleGroup implements Group {
         }
         return group.getId().equals(this.getId());
     }
-
 }

@@ -1,22 +1,15 @@
 package org.zone.region.group.key;
 
-import org.spongepowered.api.ResourceKey;
-import org.spongepowered.plugin.PluginContainer;
+import org.zone.Identifiable;
+import org.zone.annotations.Typed;
 
-public interface GroupKey {
+/**
+ * A key designed to be registered with a group which can be used to provide more information about this group, such as if this group can bypass a flag
+ *
+ * @since 1.0.0
+ */
+@Typed(typesClass = GroupKeys.class)
+public interface GroupKey extends Identifiable {
 
-    String getName();
-
-    String getKey();
-
-    PluginContainer getPlugin();
-
-    default ResourceKey getId() {
-        return ResourceKey
-                .builder()
-                .namespace(this.getPlugin())
-                .value(this.getKey())
-                .build();
-    }
 
 }

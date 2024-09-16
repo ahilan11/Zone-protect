@@ -1,23 +1,66 @@
 package org.zone.region.flag;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.spongepowered.configurate.ConfigurationNode;
 import org.zone.Identifiable;
+import org.zone.Serializable;
+import org.zone.annotations.Typed;
 import org.zone.region.Zone;
+import org.zone.region.flag.meta.tag.TagsFlagType;
 
-import java.io.IOException;
 import java.util.Optional;
 
+/**
+ * A flag type is the specific type of flag, each flag should have a unique FlagType which is
+ * designed to serialize and deserialize the flag as well as provide generic metadata about the flag itself
+ *
+ * @param <F> The class type of the attached flag
+ * @since 1.0.0
+ */
+@Typed(typesClass = FlagTypes.class)
 public interface FlagType<F extends Flag> extends Identifiable, Comparable<FlagType<?>> {
 
-    @NotNull F load(@NotNull ConfigurationNode node) throws IOException;
+    interface SerializableType<F extends Flag.Serializable> extends FlagType<F>, Serializable<F> {
 
-    void save(@NotNull ConfigurationNode node, @Nullable F save) throws IOException;
+    }
 
-    boolean canApply(Zone zone);
+    interface TaggedFlagType<F extends Flag.TaggedFlag> extends FlagType<F> {
 
-    Optional<F> createCopyOfDefaultFlag();
+        F createCopyOfDefault();
+
+        @Override
+        @Deprecated
+        default @NotNull Optional<F> createCopyOfDefaultFlag() {
+            return Optional.of(this.createCopyOfDefault());
+        }
+
+        @Override
+        default int compareTo(@NotNull FlagType<?> o) {
+            if (o instanceof TagsFlagType) {
+                return -1;
+            }
+            return FlagType.super.compareTo(o);
+        }
+    }
+
+    /**
+     * Checks if the provided zone can accept an instance of this flag
+     *
+     * @param zone the zone to compare
+     *
+     * @return If the zone can accept the flag
+     * @since 1.0.0
+     */
+    default boolean canApply(@NotNull Zone zone) {
+        return true;
+    }
+
+    /**
+     * Creates a copy of the defaults to this flag. This will be used if a flag cannot be found on a zone
+     *
+     * @return A copy of the defaults
+     * @since 1.0.0
+     */
+    @NotNull Optional<F> createCopyOfDefaultFlag();
 
     @Override
     default int compareTo(@NotNull FlagType<?> o) {
